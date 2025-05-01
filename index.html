@@ -1,47 +1,104 @@
 <!DOCTYPE html>
 <html lang='en'>
-	<head>
-		<meta charset='utf-8'>
-		<meta name='viewport' content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<link rel="stylesheet" href="./Content/Styles/fonts.css">
-		<style>
-			body {
-				margin: 0;
-				padding: 0;
-				overflow: hidden;
-			}
-			#three-d {
-				margin: 0;
-				padding: 0;
-				overflow: auto;
-				position: absolute;
-			}
-			#video-container {
-				margin: 0;
-				padding: 0;
-				overflow: auto;
-				position: absolute;
-			}
-			#hud {
-				position: absolute;
-				margin: 0;
-				padding: 0;
-			}
-			#rendering {
-				display: none;
-				overflow: hidden;
-				background-color: green;
-			}
-			.hidden {
-				display: none;
-			}
-		</style>
-	</head>
-	<body>
-		<div id='three-d'></div>
-		<video id='video-container' class='hidden' height='480px'></video>
-		<canvas id='hud' width='640px' height='480px'></canvas>
-		<canvas id='rendering' width='4096px' height='4096px'></canvas>
-		<script type="module" src="./Content/Datas/Scripts/System/main.js"></script>
-	</body>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <link rel="stylesheet" href="./Content/Styles/fonts.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    #three-d {
+      position: absolute;
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+    }
+    #video-container {
+      position: absolute;
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+    }
+    #hud {
+      position: absolute;
+      margin: 0;
+      padding: 0;
+    }
+    #rendering {
+      display: none;
+      overflow: hidden;
+      background-color: green;
+    }
+    .hidden {
+      display: none;
+    }
+    #virtual-controls {
+      position: absolute;
+      z-index: 9999;
+      font-size: 1.5rem;
+      user-select: none;
+      pointer-events: auto;
+    }
+    #virtual-controls button {
+      font-size: 1.5rem;
+      margin: 5px;
+      padding: 8px 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id='three-d'></div>
+  <video id='video-container' class='hidden' height='480px'></video>
+  <canvas id='hud' width='640px' height='480px'></canvas>
+  <canvas id='rendering' width='4096px' height='4096px'></canvas>
+  <script type="module" src="./Content/Datas/Scripts/System/main.js"></script>
+
+  <!-- 🔽 虛擬按鈕控制區 -->
+  <div id="virtual-controls">
+    <div style="text-align: center;">
+      <button onclick="pressKey('w')">W</button>
+    </div>
+    <div style="text-align: center;">
+      <button onclick="pressKey('a')">A</button>
+      <button onclick="pressKey('s')">S</button>
+      <button onclick="pressKey('d')">D</button>
+    </div>
+    <div style="text-align: center; margin-top: 10px;">
+      <button onclick="pressKey('ArrowLeft')">←</button>
+      <button onclick="pressKey('Enter')">⏎</button>
+      <button onclick="pressKey('ArrowRight')">→</button>
+    </div>
+    <div style="text-align: center; margin-top: 10px;">
+      <button onclick="pressKey('Escape')">ESC</button>
+    </div>
+  </div>
+
+  <!-- 🔽 鍵盤事件模擬與定位 -->
+  <script>
+    function pressKey(key) {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key }));
+      setTimeout(() => {
+        document.dispatchEvent(new KeyboardEvent('keyup', { key }));
+      }, 100);
+    }
+
+    function positionVirtualControls() {
+      const canvas = document.getElementById('hud');
+      const controls = document.getElementById('virtual-controls');
+      const rect = canvas.getBoundingClientRect();
+
+      controls.style.left = `${rect.left + rect.width / 2}px`;
+      controls.style.top = `${rect.bottom - 10}px`;
+      controls.style.transform = 'translateX(-50%)';
+    }
+
+    window.addEventListener('resize', positionVirtualControls);
+    window.addEventListener('load', () => {
+      setTimeout(positionVirtualControls, 500);
+    });
+  </script>
+</body>
 </html>
